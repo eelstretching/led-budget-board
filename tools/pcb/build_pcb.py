@@ -13,8 +13,8 @@ What is where (see the Layout section of README.md):
 - The 16 data lines: Pico pin -> 33R (left of the Pico) -> via -> straight across under the Pico on
   the bottom layer, between the pin rows -> fan down -> between the shroud's GND pins to the even pin.
 - The 5 V buck is the processor board's layout, copied part for part and track for track.
-- 12 V comes in on the same 9.5 mm barrier terminal as the output boards (14 AWG with a ferrule), on a
-  strip down the left edge with the wire entry facing out.
+- 12 V comes in on the same 9.5 mm barrier terminal as the output boards (14 AWG with a ferrule), on the
+  left edge below the buck, with the wire entry facing out.
 
 Everything else is routed by hand further down, track by track.
 """
@@ -116,7 +116,7 @@ def via(netname, x, y, dia=0.6, drill=0.3):
 
 
 # ---------------------------------------------------------------- outline and holes
-X0, Y0, X1, Y1 = 82.5, 60.0, 161.5, 133.0
+X0, Y0, X1, Y1 = 100.0, 60.0, 161.5, 133.0
 RAD = 3.0
 
 
@@ -196,8 +196,9 @@ for j in ('J2', 'J3'):
 # ---------------------------------------------------------------- power: terminal, D1, buck block
 # The output boards' barrier terminal. Its pins sit near the back: 11.9 mm of housing on the wire side,
 # 4.3 mm behind. Wire entry faces the left edge, the whole housing is on the board, +12 V is the top pin.
-place('J1', X0 + 12.6, 76.5, -90)
-place('D1', 111.6, 72.6, 90)         # anode up, next to J1 pin 1
+# Down the left side, top to bottom: the buck, D1, the terminal.
+place('J1', X0 + 12.1, 103.0, -90)
+place('D1', 109.4, 89.4, 180)        # between the buck and the terminal, cathode (+12 V) on the right
 place('D2', 151.3, 65.6, 0)          # +5V -> VSYS, between the Pico's VSYS pin and OUT1
 
 # the processor board's buck, moved as a block
@@ -207,7 +208,8 @@ BMAP = {'C27': 'C1', 'C28': 'C2', 'C29': 'C3', 'R20': 'R1', 'U7': 'U1', 'C30': '
 NMAP = {'+12V': '+12V', '+5V': '+5V', 'GND': 'GND', '/Power/SW': '/SW', '/Power/FB': '/FB',
         'Net-(U7-EN)': 'Net-(U1-EN)', 'Net-(U7-BOOT)': 'Net-(U1-BOOT)', 'Net-(D5-A)': 'Net-(D3-A)'}
 BOX = (123.4, 84.3, 137.0, 104.6)
-DX, DY = -22.7, -7.0
+DX, DY = -22.7, -17.3
+BY = DY + 7.0                        # the hand-routed points below were worked out with DY = -7
 for old, new in BMAP.items():
     f = v1.FindFootprintByReference(old)
     assert comps[new]['value'] == f.GetValue(), (old, new, comps[new]['value'], f.GetValue())
@@ -307,16 +309,21 @@ def a1(name):
 
 # 12 V in: terminal -> D1 -> the buck's input caps
 j = pad('J1', 1); d = pad('D1', 2)
-seg('/VIN_RAW', F, 0.8, j, (d[0] - (j[1] - d[1]) - 1.0, j[1]), (d[0] - 1.0, d[1]), d)
-path('+12V', F, 0.5, pad('D1', 1), (113.0, 74.6), (114.4, 76.0), (114.4, 82.15), (113.848, 82.703))
+seg('/VIN_RAW', F, 0.8, j, (j[0], 94.6), (108.1, 90.6), d)
+# +12 V has to cross the buck's 5 V output on its way up to the input caps: it goes on the bottom layer
+k = pad('D1', 1)
+seg('+12V', F, 0.6, k, (113.9, k[1])); via('+12V', 113.9, k[1], 0.8, 0.4)
+seg('+12V', B, 0.6, (113.9, k[1]), (114.4, k[1] - 0.5), (114.4, 83.9 + BY), (113.848, 83.35 + BY))
+via('+12V', 113.848, 83.35 + BY, 0.8, 0.4)
 
 # 5 V: buck output -> up the left of the data vias -> along the top edge -> D2 -> VSYS
 TX5 = 115.3
-path('+5V', F, 0.6, (114.14, 97.285), (TX5, 96.125), (TX5, 61.8), (TX5 + 0.6, 61.2), (152.35, 61.2),
+path('+5V', F, 0.6, (114.14, 97.285 + BY), (TX5, 96.125 + BY), (TX5, 61.8), (TX5 + 0.6, 61.2), (152.35, 61.2),
      (152.95, 61.8), pad('D2', 2))
-path('+5V', F, 0.25, (109.731, 78.1121), (109.731, 76.8))          # feedback divider top
-via('+5V', 109.731, 76.8); via('+5V', TX5, 76.8)
-seg('+5V', B, 0.4, (109.731, 76.8), (TX5, 76.8))
+FY = 76.8 + BY
+path('+5V', F, 0.25, (109.731, 78.1121 + BY), (109.731, FY))       # feedback divider top
+via('+5V', 109.731, FY); via('+5V', TX5, FY)
+seg('+5V', B, 0.4, (109.731, FY), (TX5, FY))
 vs = a1('/VSYS')
 path('/VSYS', F, 0.6, vs, (149.0, vs[1]), pad('D2', 1))
 # 5 V down to pin 15 of both shrouds, between the pin columns on the top layer
@@ -411,10 +418,10 @@ def text(s_, x, y, rot=0, size=0.9):
 
 to_fab('H1', 'H2', 'H3', 'H4', 'J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'SW1',
        *[r for r in BMAP.values() if r != 'L1'])
-ref_at('D1', 111.6, 68.2)
+ref_at('D1', 103.0, 88.9)
 ref_at('R21', QX + 6.9, 119.7); ref_at('R22', QX + 10.0, 122.6)
-text('J1 +12V', 93.5, 65.1); text('GND', 93.5, 87.9)
-text('PWR', 113.4, 94.0, 90)
+text('+12V', 103.0, 90.9); text('GND', 103.0, 114.4)
+text('PWR', 113.4, 94.0 + BY, 90)
 text('RUN', 145.6, 66.0)
 text('OUT1 GP0-7', XO - 4.7, J_Y['J2'] + 6.5, 90); text('OUT2 GP8-15', XO - 4.7, J_Y['J3'] + 6.5, 90)
 text('J7 QT I2C', QX + 1.3, 116.4)
@@ -428,11 +435,12 @@ for j, name, labels in (('J4', 'J4 UART', ['GND', 'TX', 'RX']),
         else:
             text(l, x, HY - 3.4, 90)
     text(name, sum(xs) / len(xs), HY + 3.0)
-text('led-budget-board', 107.8, 104.0)
-text('v1.0, Pico 2 W', 107.8, 105.8)
-# the logo: the processor board's footprint (logos.pretty), in the open space below the 12 V terminal
+# Board name and logo go under the Pico, between its pin rows: the only open silkscreen left
+text('led-budget-board', PX + 8.89, 92.0)
+text('v1.0, Pico 2 W', PX + 8.89, 93.8)
+# the logo: the processor board's footprint scaled to 14 mm tall (logos.pretty)
 g = pcbnew.FootprintLoad(os.path.join(os.path.dirname(os.path.abspath(OUT)), 'logos.pretty'), 'SJG_BigBrother')
-g.SetFPID(pcbnew.LIB_ID('logos', 'SJG_BigBrother')); g.SetReference('G1'); g.SetPosition(V(91.2, 104.0))
+g.SetFPID(pcbnew.LIB_ID('logos', 'SJG_BigBrother')); g.SetReference('G1'); g.SetPosition(V(PX + 8.89, 80.5))
 b.Add(g)
 
 # No bottom-layer pour among the shroud pins: the data lanes there would cut it into slivers that

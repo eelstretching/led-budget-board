@@ -34,7 +34,7 @@ The same on both boards:
   the through-hole footprint).
 - `tools/build_schematic.py`: wrote the first version of the schematic. Edit the schematic in KiCad from
   now on; re-running the script overwrites it.
-- `led-budget-board.kicad_pcb`: the board, 79 x 73 mm, two layers, fully routed. The design rules check
+- `led-budget-board.kicad_pcb`: the board, 61.5 x 73 mm, two layers, fully routed. The design rules check
   is clean (no errors, no warnings, nothing unconnected, matches the schematic).
 - `tools/pcb/build_pcb.py`: placed and routed the board. Same warning: it overwrites the board.
 
@@ -48,8 +48,9 @@ The same on both boards:
 - Data lines: Pico pin, 33R, via, straight across under the Pico on the bottom layer, then between the
   shroud's ground pins to the even pin. GP13-15 go round the Pico W antenna keep-out.
 - The 5 V buck is the processor board's layout, copied part for part and track for track.
-- 12 V comes in on a strip down the left edge: J1's wire entry faces out, the whole housing sits on
-  the board, +12V is the top screw. The STEMMA QT socket is on the same edge.
+- Down the left side: the buck, D1, then J1. J1's wire entry faces the left edge, the whole housing
+  sits on the board, +12V is the top screw. The STEMMA QT socket is below it on the same edge.
+- The logo and the board name are under the Pico, between its pin rows.
 - The Pico's right-hand pins run down the gap between the Pico and the shrouds to the headers on the
   bottom edge. J6 (spare) is GND, GP18, GP19, GP22, GP26, GP27, GP28, 3V3, left to right.
 - J5 (I2C header, bottom right) and J7 (STEMMA QT, left edge) share the bus and the 10k pull-ups.
