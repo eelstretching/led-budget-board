@@ -416,7 +416,8 @@ def header(n, ref, value, x, desc, nets):
         elif net == '+3V3':
             # left past the GND symbol on the pin above, then up to an upright +3V3
             top = J[1][1] - 2.54
-            sh.wire(p, (p[0] - 12.7, p[1]), (p[0] - 12.7, top)); pwr(sh, '+3V3', (p[0] - 12.7, top))
+            off = 12.7 if i < 2 else 17.78                 # further out when it has to pass net labels
+            sh.wire(p, (p[0] - off, p[1]), (p[0] - off, top)); pwr(sh, '+3V3', (p[0] - off, top))
         else:
             sh.wire(p, (p[0] - 7.62, p[1])); sh.label(net, (p[0] - 7.62, p[1]), 180)
     return J
@@ -445,9 +446,9 @@ for n, net in [(3, 'GP20'), (4, 'GP21')]:
     p = J7[n]; sh.wire(p, (p[0] - 7.62, p[1])); sh.label(net, (p[0] - 7.62, p[1]), 180)
 gnd(sh, J7['MP'])
 sh.text('1 GND\n2 3V3\n3 SDA (GP20)\n4 SCL (GP21)', (309.88, hy + 16.51))
-header(8, 'J6', 'SPARE', 345.44, 'Spare GPIO: 3V3, GP18, GP19, GP22, GP26-28 (ADC0-2), GND',
-       ['+3V3', 'GP18', 'GP19', 'GP22', 'GP26', 'GP27', 'GP28', 'GND'])
-sh.text('1 3V3\n2 GP18\n3 GP19\n4 GP22\n5 GP26 / ADC0\n6 GP27 / ADC1\n7 GP28 / ADC2\n8 GND', (350.52, hy + 26.67))
+header(8, 'J6', 'SPARE', 350.52, 'Spare GPIO: GND, GP18, GP19, GP22, GP26-28 (ADC0-2), 3V3',
+       ['GND', 'GP18', 'GP19', 'GP22', 'GP26', 'GP27', 'GP28', '+3V3'])
+sh.text('1 GND\n2 GP18\n3 GP19\n4 GP22\n5 GP26 / ADC0\n6 GP27 / ADC1\n7 GP28 / ADC2\n8 3V3', (355.6, hy + 26.67))
 sh.text('J4: debug UART, moved off GP0/1 so the outputs get GP0-15.\n'
         'J5 and J7: I2C0 with 10k pull-ups, for a small display or a sensor. J5 is a pin header in the\n'
         'order of the common 4-pin OLED modules; J7 is a STEMMA QT / Qwiic socket for ready-made cables.\n'

@@ -5,7 +5,7 @@
 
 Needs KiCad's pcbnew Python module. NETLIST.xml is `kicad-cli sch export netlist --format kicadxml`.
 
-What is fixed here (see docs/layout.md):
+What is where (see the Layout section of README.md):
 - Pico 2 W upright, USB at the top edge. GP0-15 are all on its left pin column.
 - Both shrouds on the right edge, key notch facing into the board, pin 1 at the top: the same way
   round as an output board sitting to the right with its shroud edge towards this board, so the
@@ -14,7 +14,7 @@ What is fixed here (see docs/layout.md):
   the bottom layer, between the pin rows -> fan down -> between the shroud's GND pins to the even pin.
 - The 5 V buck is the processor board's layout, copied part for part and track for track.
 
-Everything else is left for the autorouter (tools/pcb/route.sh).
+Everything else is routed by hand further down, track by track.
 """
 import sys, os, math
 import xml.etree.ElementTree as ET
@@ -188,12 +188,12 @@ for j in ('J2', 'J3'):
         cands = sorted((r for r, p in netpins[rail] if r.startswith('C') and comps[r]['value'] == '100n'
                        and comps[r]['fp'].endswith('C_0402_1005Metric') and p == '1'), key=lambda r: int(r[1:]))
         c = cands[0 if j == 'J2' else 1]
-        place(c, XO - 4.9, y, 180)                         # pad 1 (the rail) next to the shroud pin
+        place(c, XO - 4.9, y, 0 if jpin == 13 else 180)    # 3V3 cap: pad 1 towards the 3V3 trunk on its left
 
 # ---------------------------------------------------------------- power: terminal, D1, buck block
 place('J1', 106.0, 71.0, -90)        # wire entry faces the left edge, housing fully on the board
 place('D1', 111.6, 72.6, 90)         # anode up, next to J1 pin 1
-place('D2', 145.3, 63.6, 0)          # +5V -> VSYS, next to the Pico's VSYS pin
+place('D2', 151.3, 65.6, 0)          # +5V -> VSYS, between the Pico's VSYS pin and OUT1
 
 # the processor board's buck, moved as a block
 v1 = pcbnew.LoadBoard(V1)
@@ -241,7 +241,7 @@ def on_pad(name, pt):
     return False
 
 
-# Drop the stubs that led out of the block on the processor board (the autorouter reconnects them).
+# Drop the stubs that led out of the block on the processor board; they are reconnected below.
 while True:
     ends = {}
     for s_ in segs:
@@ -258,19 +258,171 @@ while True:
 for name, layer, w, a, c in segs:
     seg(name, layer, w, a, c)
 for name, x, y, dia, drill in vias:
+    if name == '+5V':
+        continue                     # the 5 V output leaves on the top layer here
     via(name, x, y, dia, drill)
 ncopy = len(segs) + len(vias)
 print('buck: copied', ncopy, 'tracks and vias')
 
 # ---------------------------------------------------------------- bottom strip: headers, button, QT
 HY = 128.5
-place('J6', 109.5, HY, 90)           # SPARE, pin 1 on the left
-place('J5', 131.5, HY, 90)           # I2C
-place('J4', 143.4, HY, 90)           # UART
-place('R21', 133.3, 124.4, 90)
-place('R22', 135.9, 124.4, 90)
-place('SW1', 143.0, 121.0, 0)        # RUN
+place('J4', 112.1, HY, 90)           # UART, pin 1 (GND) on the left
+place('J6', 121.0, HY, 90)           # SPARE, pin 1 (GND) on the left
+place('J5', 150.52, HY, -90)         # I2C, pin 1 (GND) on the right
+place('R21', 110.2, 121.8, 180)      # I2C pull-ups next to the QT socket, pad 2 (the bus) on the left
+place('R22', 110.2, 123.3, 180)
+place('SW1', 145.6, 63.4, 180)       # RUN, top edge next to the USB socket
 place('J7', 103.3, 121.3, -90)       # STEMMA QT, opening at the left edge
+
+
+# ---------------------------------------------------------------- the rest of the copper
+F, B = pcbnew.F_Cu, pcbnew.B_Cu
+
+
+def path(netname, layer, w, *pts, c=0.4):
+    """A track through pts with every right-angle corner cut at 45 degrees."""
+    out = [pts[0]]
+    for a, m, z in zip(pts, pts[1:], pts[2:]):
+        d1 = (m[0] - a[0], m[1] - a[1]); d2 = (z[0] - m[0], z[1] - m[1])
+        l1 = math.hypot(*d1); l2 = math.hypot(*d2)
+        if abs(d1[0] * d2[0] + d1[1] * d2[1]) < 1e-9 and l1 > 2 * c and l2 > 2 * c:
+            out.append((m[0] - d1[0] / l1 * c, m[1] - d1[1] / l1 * c))
+            out.append((m[0] + d2[0] / l2 * c, m[1] + d2[1] / l2 * c))
+        else:
+            out.append(m)
+    out.append(pts[-1])
+    seg(netname, layer, w, *[(round(x, 4), round(y, 4)) for x, y in out])
+
+
+def a1(name):
+    """The Pico pad on a net."""
+    return pad('A1', [p for r, p in netpins[name] if r == 'A1'][0])
+
+
+# 12 V in: terminal -> D1 -> the buck's input caps
+path('/VIN_RAW', F, 0.8, pad('J1', 1), (108.5, 71.0), (108.9, 70.6), pad('D1', 2))
+path('+12V', F, 0.5, pad('D1', 1), (113.0, 74.6), (114.4, 76.0), (114.4, 82.15), (113.848, 82.703))
+
+# 5 V: buck output -> up the left of the data vias -> along the top edge -> D2 -> VSYS
+TX5 = 115.3
+path('+5V', F, 0.6, (114.14, 97.285), (TX5, 96.125), (TX5, 61.8), (TX5 + 0.6, 61.2), (152.35, 61.2),
+     (152.95, 61.8), pad('D2', 2))
+path('+5V', F, 0.25, (109.731, 78.1121), (109.731, 76.8))          # feedback divider top
+via('+5V', 109.731, 76.8); via('+5V', TX5, 76.8)
+seg('+5V', B, 0.4, (109.731, 76.8), (TX5, 76.8))
+vs = a1('/VSYS')
+path('/VSYS', F, 0.6, vs, (149.0, vs[1]), pad('D2', 1))
+# 5 V down to pin 15 of both shrouds, between the pin columns on the top layer
+XM = XO + 1.27
+p15a, p15b = pad('J2', 15), pad('J3', 15)
+seg('+5V', F, 0.3, pad('D2', 2), (152.95, 67.0), (XM, 67.0 + XM - 152.95), (XM, p15a[1] - 1.27), p15a,
+    (XO, p15a[1] + 2.0), (XM, p15a[1] + 3.27), (XM, p15b[1] - 1.27), p15b)
+
+# RUN: up the inside of the Pico's right pin column, out between pins 40 and 39, to the button
+rn = a1('Net-(A1-RUN)')
+seg('Net-(A1-RUN)', F, W, rn, (138.3, rn[1]), (138.0, rn[1] - 0.3), (138.0, 65.07), (138.3, 64.77), (141.0, 64.77),
+    (142.37, 63.4), pad('SW1', 2))
+via('GND', 150.0, 63.0); seg('GND', F, 0.4, pad('SW1', 1), (150.0, 63.4), (150.0, 63.0))
+
+# The Pico's right-hand pins: a bundle down the gap between the Pico and the shrouds, then left along
+# the bottom strip to the headers. Lower pins take the inner tracks, so nothing crosses.
+BX = 141.2                           # innermost vertical
+PITCH = 0.5
+order = ['/GP16', '/GP17', '/GP18', '/GP19', '/GP20', '/GP21', '/GP22', '/GP26', '/GP27', '/GP28']
+vx = {n: BX + PITCH * i for i, n in enumerate(order)}
+dest = {'/GP16': ('J4', 2, 114.2), '/GP17': ('J4', 3, 114.7), '/GP18': ('J6', 2, 115.2), '/GP19': ('J6', 3, 115.7),
+        '/GP22': ('J6', 4, 122.0), '/GP26': ('J6', 5, 122.5), '/GP27': ('J6', 6, 123.0), '/GP28': ('J6', 7, 123.5)}
+for n, (j, jp, hy_) in dest.items():
+    s0 = a1(n); e = pad(j, jp)
+    path(n, F, W, s0, (vx[n], s0[1]), (vx[n], hy_), (e[0], hy_), e)
+
+# 3.3 V: the outermost track of the bundle
+X33 = 146.55
+s0 = a1('+3V3'); e = pad('J6', 8)
+path('+3V3', F, 0.5, s0, (X33, s0[1]), (X33, 124.2), (e[0], 124.2), e)
+e = pad('J5', 2)
+seg('+3V3', F, 0.5, (X33, 124.2), (X33, 126.0), (e[0], e[1] - 0.72), e)
+for j in ('J2', 'J3'):
+    p13 = pad(j, 13)
+    c = [r for r, p in netpins['+3V3'] if r.startswith('C') and abs(pad(r, 1)[1] - p13[1]) < 0.1][0]
+    seg('+3V3', F, 0.3, (X33, p13[1]), pad(c, 1))
+    # below the pin row, so GND pin 11 above keeps its thermal spokes
+    seg('+3V3', F, 0.3, (X33, p13[1] + 1.27), (XO - 2.0, p13[1] + 1.27), (XO - 0.73, p13[1]), p13)
+    p15 = pad(j, 15)
+    c = [r for r, p in netpins['+5V'] if r.startswith('C') and abs(pad(r, 1)[1] - p15[1]) < 0.1][0]
+    seg('+5V', F, 0.3, pad(c, 1), p15)
+
+# The top pour between the two shrouds is boxed in by the 3.3 V and 5 V tracks: tie it to the bottom pour
+via('GND', 149.5, 94.0); via('GND', 151.0, 95.5)
+
+# I2C: down the bundle, through to the bottom layer, to J5; and across the bottom strip to the QT socket
+sda, scl = a1('/GP20'), a1('/GP21')
+SDV, SCV = (141.9, 119.6), (143.0, 121.0)        # vias, below the last data lane
+path('/GP20', F, W, sda, (vx['/GP20'], sda[1]), (vx['/GP20'], 116.2), c=0.4)
+seg('/GP20', F, W, (vx['/GP20'], 116.2), (SDV[0], 116.2 + vx['/GP20'] - SDV[0]), SDV)
+path('/GP21', F, W, scl, (vx['/GP21'], scl[1]), (vx['/GP21'], 116.6), c=0.4)
+seg('/GP21', F, W, (vx['/GP21'], 116.6), (SCV[0], 116.6 + vx['/GP21'] - SCV[0]), SCV)
+via('/GP20', *SDV); via('/GP21', *SCV)
+e = pad('J5', 4)
+seg('/GP20', B, W, SDV, (SDV[0], e[1] - 2.0), (e[0], e[1] - 1.0), e)
+QD, QC = (108.6, 121.8), (107.6, 122.8)          # vias next to the QT socket's SDA and SCL pads
+seg('/GP20', B, W, SDV, (QD[0] + 1.0, SDV[1]), (QD[0], SDV[1] + 1.0), QD)
+via('/GP20', *QD)
+seg('/GP20', F, W, pad('J7', 3), QD, pad('R21', 2))
+e = pad('J5', 3)
+seg('/GP21', B, W, SCV, (e[0] - 1.04, SCV[1]), (e[0], SCV[1] + 1.04), e, (e[0], e[1] + 1.4), (e[0] - 0.6, e[1] + 2.0),
+    (QC[0] + 0.6, e[1] + 2.0), (QC[0], e[1] + 1.4), QC)   # under the header row, so it never crosses SDA
+via('/GP21', *QC)
+seg('/GP21', F, W, pad('J7', 4), QC, (108.7, 122.8), (109.2, 123.3), pad('R22', 2))
+# 3.3 V for the QT socket and the pull-ups, from J6 pin 8 along the bottom layer
+r1, r2 = pad('R21', 1), pad('R22', 1); q2 = pad('J7', 2)
+seg('+3V3', F, 0.3, q2, (r1[0], q2[1]), r1, r2)
+seg('+3V3', F, 0.3, (r1[0], q2[1]), (111.5, q2[1]))
+via('+3V3', 111.5, q2[1])
+e = pad('J6', 8)
+seg('+3V3', B, 0.4, (111.5, q2[1]), (111.5, 125.4), (112.3, 126.2), (e[0] - 0.8, 126.2), (e[0], 127.0), e)
+
+# ---------------------------------------------------------------- silkscreen
+def to_fab(*refs):
+    """Keep the reference in KiCad but off the printed board."""
+    for r in refs:
+        FP[r].Reference().SetLayer(pcbnew.F_Fab)
+
+
+def ref_at(r, x, y, rot=0):
+    t = FP[r].Reference()
+    t.SetPosition(V(x, y)); t.SetTextAngleDegrees(rot)
+    t.SetTextSize(pcbnew.VECTOR2I(mm(0.8), mm(0.8))); t.SetTextThickness(mm(0.13))
+
+
+def text(s_, x, y, rot=0, size=0.9):
+    t = pcbnew.PCB_TEXT(b)
+    t.SetText(s_); t.SetLayer(pcbnew.F_SilkS); t.SetPosition(V(x, y)); t.SetTextAngleDegrees(rot)
+    t.SetTextSize(pcbnew.VECTOR2I(mm(size), mm(size))); t.SetTextThickness(mm(size / 6))
+    b.Add(t)
+
+
+to_fab('H1', 'H2', 'H3', 'H4', 'J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'SW1',
+       *[r for r in BMAP.values() if r != 'L1'])
+ref_at('D1', 111.6, 68.2)
+ref_at('R21', 110.2, 119.7); ref_at('R22', 113.3, 122.6)
+text('J1 +12V', 105.2, 67.6); text('GND', 103.5, 77.5)
+text('PWR', 113.4, 94.0, 90)
+text('RUN', 145.6, 66.0)
+text('OUT1 GP0-7', XO - 4.7, J_Y['J2'] + 6.5, 90); text('OUT2 GP8-15', XO - 4.7, J_Y['J3'] + 6.5, 90)
+text('J7 QT I2C', 104.6, 116.4)
+for j, name, labels in (('J4', 'J4 UART', ['GND', 'TX', 'RX']),
+                        ('J6', 'J6 SPARE', ['GND', '18', '19', '22', '26', '27', '28', '3V3']),
+                        ('J5', 'J5 I2C', ['GND', '3V3', 'SCL', 'SDA'])):
+    xs = [pad(j, i + 1)[0] for i in range(len(labels))]
+    for x, l in zip(xs, labels):
+        if j == 'J5' and l == 'GND':                       # no room above it, under OUT2
+            text(l, x + 3.3, HY)
+        else:
+            text(l, x, HY - 3.4, 90)
+    text(name, sum(xs) / len(xs), HY + 3.0)
+text('led-budget-board', 108.2, 103.6)
+text('v1.0, Pico 2 W', 108.2, 105.4)
 
 # No bottom-layer pour among the shroud pins: the data lanes there would cut it into slivers that
 # hang off the GND pins by one spoke. Those pins get their ground from the top pour.

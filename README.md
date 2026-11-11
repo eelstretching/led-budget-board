@@ -34,10 +34,25 @@ The same on both boards:
   the through-hole footprint).
 - `tools/build_schematic.py`: wrote the first version of the schematic. Edit the schematic in KiCad from
   now on; re-running the script overwrites it.
+- `led-budget-board.kicad_pcb`: the board, 61.5 x 73 mm, two layers, fully routed. The design rules check
+  is clean (no errors, no warnings, nothing unconnected, matches the schematic).
+- `tools/pcb/build_pcb.py`: placed and routed the board. Same warning: it overwrites the board.
+
+## Layout
+
+![Layout](docs/layout.png)
+
+- Pico 2 W upright with USB at the top edge. Both shrouds on the right edge, pin 1 at the top, key notch
+  facing into the board: an output board sitting to the right with its shroud edge towards this board
+  gets a straight ribbon with no twist.
+- Data lines: Pico pin, 33R, via, straight across under the Pico on the bottom layer, then between the
+  shroud's ground pins to the even pin. GP13-15 go round the Pico W antenna keep-out.
+- The 5 V buck is the processor board's layout, copied part for part and track for track.
+- The Pico's right-hand pins run down the gap between the Pico and the shrouds to the headers on the
+  bottom edge. J6 (spare) is GND, GP18, GP19, GP22, GP26, GP27, GP28, 3V3, left to right.
+- J5 (I2C header, bottom right) and J7 (STEMMA QT, left edge) share the bus and the 10k pull-ups.
 
 ## Still to do
 
-- PCB layout. Lessons from processor board v1 to carry over: shrouds face so the ribbons need no twist,
-  the 12 V terminal sits fully on the board, every part is one JLCPCB can assemble (through-hole too).
-- Pick LCSC parts for the through-hole parts (shrouds, 1x20 sockets, pin headers).
+- JLCPCB production files, with LCSC parts for the through-hole parts (shrouds, 1x20 sockets, pin headers).
 - A `led_budget_board.h` board header for the firmware (default UART on GP16/17).

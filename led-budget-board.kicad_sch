@@ -15665,7 +15665,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x08")
-		(at 345.44 236.22 0)
+		(at 350.52 236.22 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -15675,17 +15675,6 @@
 		(dnp no)
 		(uuid "428bc455-5d99-5d3e-9b01-fdc7dbb5044e")
 		(property "Reference" "J6"
-			(at 344.17 220.98 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "SPARE"
 			(at 349.25 220.98 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15696,8 +15685,19 @@
 				(justify left)
 			)
 		)
+		(property "Value" "SPARE"
+			(at 354.33 220.98 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
 		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
-			(at 345.44 236.22 0)
+			(at 350.52 236.22 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15708,7 +15708,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 345.44 236.22 0)
+			(at 350.52 236.22 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15718,8 +15718,8 @@
 				)
 			)
 		)
-		(property "Description" "Spare GPIO: 3V3, GP18, GP19, GP22, GP26-28 (ADC0-2), GND"
-			(at 345.44 236.22 0)
+		(property "Description" "Spare GPIO: GND, GP18, GP19, GP22, GP26-28 (ADC0-2), 3V3"
+			(at 350.52 236.22 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15730,7 +15730,7 @@
 			)
 		)
 		(property "manufacturer" ""
-			(at 345.44 236.22 0)
+			(at 350.52 236.22 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15741,7 +15741,7 @@
 			)
 		)
 		(property "manufacturer_pn" "1x8 2.54 mm pin header"
-			(at 345.44 236.22 0)
+			(at 350.52 236.22 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15786,7 +15786,7 @@
 	)
 	(wire
 		(pts
-			(xy 340.36 228.6) (xy 327.66 228.6)
+			(xy 345.44 228.6) (xy 340.36 228.6)
 		)
 		(stroke
 			(width 0)
@@ -15794,15 +15794,223 @@
 		)
 		(uuid "16559adc-2ee1-5863-9222-36ae1c609866")
 	)
+	(symbol
+		(lib_id "power:GND")
+		(at 340.36 228.6 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "a8a2a5f8-d0d1-57dc-b875-4d56878ca8fb")
+		(property "Reference" "#PWR39"
+			(at 342.9 227.33 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 340.36 233.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 340.36 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 340.36 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 340.36 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a0c03a38-5377-5963-bdb9-a116f5b5711e")
+		)
+		(instances
+			(project "led-budget-board"
+				(path "/b7721a3c-49b8-55eb-b12d-a4a5859f9860"
+					(reference "#PWR39")
+					(unit 1)
+				)
+			)
+		)
+	)
 	(wire
 		(pts
-			(xy 327.66 228.6) (xy 327.66 226.06)
+			(xy 345.44 231.14) (xy 337.82 231.14)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "a8a2a5f8-d0d1-57dc-b875-4d56878ca8fb")
+		(uuid "d37b5875-5cef-5efd-84e4-f4595510ecb7")
+	)
+	(label "GP18"
+		(at 337.82 231.14 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "023c3537-6612-51d3-bed4-e4d58f7aabd3")
+	)
+	(wire
+		(pts
+			(xy 345.44 233.68) (xy 337.82 233.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4575b5ec-e07e-58c1-b504-9b11f2ed9944")
+	)
+	(label "GP19"
+		(at 337.82 233.68 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "db1713da-315a-577d-81bd-1b474afd09ba")
+	)
+	(wire
+		(pts
+			(xy 345.44 236.22) (xy 337.82 236.22)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3419f129-7110-5dca-9f77-e6ee6c5c158e")
+	)
+	(label "GP22"
+		(at 337.82 236.22 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "0b8df14d-797a-5cfd-b6c1-cb5cb45d6a64")
+	)
+	(wire
+		(pts
+			(xy 345.44 238.76) (xy 337.82 238.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b21b76d4-4fe0-5476-83d4-aa4cc2d044ae")
+	)
+	(label "GP26"
+		(at 337.82 238.76 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "50c8cd6c-454c-5ceb-b2a3-c3e5d27dd69f")
+	)
+	(wire
+		(pts
+			(xy 345.44 241.3) (xy 337.82 241.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "df7adba5-20e4-54a2-a7b1-fb1793da4a4f")
+	)
+	(label "GP27"
+		(at 337.82 241.3 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8f2ddf84-47e0-5c5a-9273-6dd6b535fe14")
+	)
+	(wire
+		(pts
+			(xy 345.44 243.84) (xy 337.82 243.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8ce9975b-47ff-5a38-9dcf-b30997a90558")
+	)
+	(label "GP28"
+		(at 337.82 243.84 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b620c9f7-aa19-5866-8d58-2d9defe24924")
+	)
+	(wire
+		(pts
+			(xy 345.44 246.38) (xy 327.66 246.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "53429ab6-3f84-5c97-8b2c-402b84141bb2")
+	)
+	(wire
+		(pts
+			(xy 327.66 246.38) (xy 327.66 226.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f2ba2e43-998d-51bf-8636-fb458b6702b1")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -15814,8 +16022,8 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp no)
-		(uuid "a0c03a38-5377-5963-bdb9-a116f5b5711e")
-		(property "Reference" "#PWR39"
+		(uuid "34432401-2793-586e-b649-e56c426f106d")
+		(property "Reference" "#PWR40"
 			(at 330.2 224.79 0)
 			(hide yes)
 			(show_name no)
@@ -15870,214 +16078,6 @@
 			)
 		)
 		(pin "1"
-			(uuid "d37b5875-5cef-5efd-84e4-f4595510ecb7")
-		)
-		(instances
-			(project "led-budget-board"
-				(path "/b7721a3c-49b8-55eb-b12d-a4a5859f9860"
-					(reference "#PWR39")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 340.36 231.14) (xy 332.74 231.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "023c3537-6612-51d3-bed4-e4d58f7aabd3")
-	)
-	(label "GP18"
-		(at 332.74 231.14 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "4575b5ec-e07e-58c1-b504-9b11f2ed9944")
-	)
-	(wire
-		(pts
-			(xy 340.36 233.68) (xy 332.74 233.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "db1713da-315a-577d-81bd-1b474afd09ba")
-	)
-	(label "GP19"
-		(at 332.74 233.68 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "3419f129-7110-5dca-9f77-e6ee6c5c158e")
-	)
-	(wire
-		(pts
-			(xy 340.36 236.22) (xy 332.74 236.22)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0b8df14d-797a-5cfd-b6c1-cb5cb45d6a64")
-	)
-	(label "GP22"
-		(at 332.74 236.22 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "b21b76d4-4fe0-5476-83d4-aa4cc2d044ae")
-	)
-	(wire
-		(pts
-			(xy 340.36 238.76) (xy 332.74 238.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "50c8cd6c-454c-5ceb-b2a3-c3e5d27dd69f")
-	)
-	(label "GP26"
-		(at 332.74 238.76 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "df7adba5-20e4-54a2-a7b1-fb1793da4a4f")
-	)
-	(wire
-		(pts
-			(xy 340.36 241.3) (xy 332.74 241.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8f2ddf84-47e0-5c5a-9273-6dd6b535fe14")
-	)
-	(label "GP27"
-		(at 332.74 241.3 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "8ce9975b-47ff-5a38-9dcf-b30997a90558")
-	)
-	(wire
-		(pts
-			(xy 340.36 243.84) (xy 332.74 243.84)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b620c9f7-aa19-5866-8d58-2d9defe24924")
-	)
-	(label "GP28"
-		(at 332.74 243.84 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "53429ab6-3f84-5c97-8b2c-402b84141bb2")
-	)
-	(wire
-		(pts
-			(xy 340.36 246.38) (xy 335.28 246.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f2ba2e43-998d-51bf-8636-fb458b6702b1")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 335.28 246.38 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(uuid "34432401-2793-586e-b649-e56c426f106d")
-		(property "Reference" "#PWR40"
-			(at 337.82 245.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "GND"
-			(at 335.28 251.46 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 335.28 246.38 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 335.28 246.38 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 335.28 246.38 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
 			(uuid "462dd3cc-5766-5637-940a-fd60b1f50d71")
 		)
 		(instances
@@ -16089,9 +16089,9 @@
 			)
 		)
 	)
-	(text "1 3V3\n2 GP18\n3 GP19\n4 GP22\n5 GP26 / ADC0\n6 GP27 / ADC1\n7 GP28 / ADC2\n8 GND"
+	(text "1 GND\n2 GP18\n3 GP19\n4 GP22\n5 GP26 / ADC0\n6 GP27 / ADC1\n7 GP28 / ADC2\n8 3V3"
 		(exclude_from_sim no)
-		(at 350.52 242.57 0)
+		(at 355.6 242.57 0)
 		(effects
 			(font
 				(size 1.27 1.27)
