@@ -421,8 +421,12 @@ for j, name, labels in (('J4', 'J4 UART', ['GND', 'TX', 'RX']),
         else:
             text(l, x, HY - 3.4, 90)
     text(name, sum(xs) / len(xs), HY + 3.0)
-text('led-budget-board', 108.2, 103.6)
-text('v1.0, Pico 2 W', 108.2, 105.4)
+text('led-budget-board', 108.2, 98.7, size=0.8)
+text('v1.0, Pico 2 W', 108.2, 100.2, size=0.8)
+# the logo: the processor board's footprint scaled to 14 mm tall (logos.pretty)
+g = pcbnew.FootprintLoad(os.path.join(os.path.dirname(os.path.abspath(OUT)), 'logos.pretty'), 'SJG_BigBrother')
+g.SetFPID(pcbnew.LIB_ID('logos', 'SJG_BigBrother')); g.SetReference('G1'); g.SetPosition(V(108.2, 108.3))
+b.Add(g)
 
 # No bottom-layer pour among the shroud pins: the data lanes there would cut it into slivers that
 # hang off the GND pins by one spoke. Those pins get their ground from the top pour.
