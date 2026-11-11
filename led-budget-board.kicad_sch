@@ -4810,7 +4810,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal"
+		(property "Footprint" "led-budget-board:CONN-TH_2P-P9.50_DBT50G-9.5-2P"
 			(at 25.4 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -4832,7 +4832,7 @@
 				)
 			)
 		)
-		(property "Description" "12 V input from the LED supply, 3.5 mm screw terminal"
+		(property "Description" "12 V input from the LED supply: 9.5 mm barrier terminal, the output boards' input terminal, takes 14 AWG with a ferrule"
 			(at 25.4 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -4854,7 +4854,7 @@
 				)
 			)
 		)
-		(property "manufacturer_pn" "DB301V-3.5-2P-GN-S"
+		(property "manufacturer_pn" "DBT50G-9.5-2P"
 			(at 25.4 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -4865,7 +4865,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C695629"
+		(property "LCSC" "C395958"
 			(at 25.4 76.2 0)
 			(hide yes)
 			(show_name no)

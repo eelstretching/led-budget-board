@@ -236,9 +236,10 @@ sh = Sheet('/' + ROOT)
 sh.text('12 V in, 5 V buck', (25.4, 50.8), size=2.54)
 J1 = sh.symbol('Connector:Screw_Terminal_01x02', SYM['Connector:Screw_Terminal_01x02'], 'J1', '12V IN',
                (25.4, 76.2), mirror='y',
-               fields=part('DB301V-3.5-2P-GN-S', 'C695629', 'DORABO',
-                           '12 V input from the LED supply, 3.5 mm screw terminal',
-                           'TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal'),
+               fields=part('DBT50G-9.5-2P', 'C395958', 'DORABO',
+                           '12 V input from the LED supply: 9.5 mm barrier terminal, the output boards\' input '
+                           'terminal, takes 14 AWG with a ferrule',
+                           'led-budget-board:CONN-TH_2P-P9.50_DBT50G-9.5-2P'),
                ref_at=(17.78, 72.39), val_at=(17.78, 74.93))
 sh.wire(J1[2], (33.02, J1[2][1]), (33.02, 83.82)); gnd(sh, (33.02, 83.82))
 D1 = sh.symbol('Device:D_Schottky', SYM['Device:D_Schottky'], 'D1', 'SS34', (44.45, 76.2), rot=180,

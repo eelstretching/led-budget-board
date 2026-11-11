@@ -13,6 +13,8 @@ What is where (see the Layout section of README.md):
 - The 16 data lines: Pico pin -> 33R (left of the Pico) -> via -> straight across under the Pico on
   the bottom layer, between the pin rows -> fan down -> between the shroud's GND pins to the even pin.
 - The 5 V buck is the processor board's layout, copied part for part and track for track.
+- 12 V comes in on the same 9.5 mm barrier terminal as the output boards (14 AWG with a ferrule), on a
+  strip down the left edge with the wire entry facing out.
 
 Everything else is routed by hand further down, track by track.
 """
@@ -63,7 +65,8 @@ def net(name):
 FP = {}
 for ref, c in comps.items():
     lib, name = c['fp'].split(':')
-    f = pcbnew.FootprintLoad(os.path.join(STOCK, lib + '.pretty'), name)
+    here = os.path.join(os.path.dirname(os.path.abspath(OUT)), lib + '.pretty')      # project library?
+    f = pcbnew.FootprintLoad(here if os.path.isdir(here) else os.path.join(STOCK, lib + '.pretty'), name)
     f.SetFPID(pcbnew.LIB_ID(lib, name))
     f.SetReference(ref)
     f.SetValue(c['value'])
@@ -113,7 +116,7 @@ def via(netname, x, y, dia=0.6, drill=0.3):
 
 
 # ---------------------------------------------------------------- outline and holes
-X0, Y0, X1, Y1 = 100.0, 60.0, 161.5, 133.0
+X0, Y0, X1, Y1 = 82.5, 60.0, 161.5, 133.0
 RAD = 3.0
 
 
@@ -191,7 +194,9 @@ for j in ('J2', 'J3'):
         place(c, XO - 4.9, y, 0 if jpin == 13 else 180)    # 3V3 cap: pad 1 towards the 3V3 trunk on its left
 
 # ---------------------------------------------------------------- power: terminal, D1, buck block
-place('J1', 106.0, 71.0, -90)        # wire entry faces the left edge, housing fully on the board
+# The output boards' barrier terminal. Its pins sit near the back: 11.9 mm of housing on the wire side,
+# 4.3 mm behind. Wire entry faces the left edge, the whole housing is on the board, +12 V is the top pin.
+place('J1', X0 + 12.6, 76.5, -90)
 place('D1', 111.6, 72.6, 90)         # anode up, next to J1 pin 1
 place('D2', 151.3, 65.6, 0)          # +5V -> VSYS, between the Pico's VSYS pin and OUT1
 
@@ -269,10 +274,11 @@ HY = 128.5
 place('J4', 112.1, HY, 90)           # UART, pin 1 (GND) on the left
 place('J6', 121.0, HY, 90)           # SPARE, pin 1 (GND) on the left
 place('J5', 150.52, HY, -90)         # I2C, pin 1 (GND) on the right
-place('R21', 110.2, 121.8, 180)      # I2C pull-ups next to the QT socket, pad 2 (the bus) on the left
-place('R22', 110.2, 123.3, 180)
+QX = X0 + 3.3                        # the QT socket sits on the left edge; everything round it hangs off QX
+place('R21', QX + 6.9, 121.8, 180)      # I2C pull-ups next to the QT socket, pad 2 (the bus) on the left
+place('R22', QX + 6.9, 123.3, 180)
 place('SW1', 145.6, 63.4, 180)       # RUN, top edge next to the USB socket
-place('J7', 103.3, 121.3, -90)       # STEMMA QT, opening at the left edge
+place('J7', QX, 121.3, -90)       # STEMMA QT, opening at the left edge
 
 
 # ---------------------------------------------------------------- the rest of the copper
@@ -300,7 +306,8 @@ def a1(name):
 
 
 # 12 V in: terminal -> D1 -> the buck's input caps
-path('/VIN_RAW', F, 0.8, pad('J1', 1), (108.5, 71.0), (108.9, 70.6), pad('D1', 2))
+j = pad('J1', 1); d = pad('D1', 2)
+seg('/VIN_RAW', F, 0.8, j, (d[0] - (j[1] - d[1]) - 1.0, j[1]), (d[0] - 1.0, d[1]), d)
 path('+12V', F, 0.5, pad('D1', 1), (113.0, 74.6), (114.4, 76.0), (114.4, 82.15), (113.848, 82.703))
 
 # 5 V: buck output -> up the left of the data vias -> along the top edge -> D2 -> VSYS
@@ -365,7 +372,7 @@ seg('/GP21', F, W, (vx['/GP21'], 116.6), (SCV[0], 116.6 + vx['/GP21'] - SCV[0]),
 via('/GP20', *SDV); via('/GP21', *SCV)
 e = pad('J5', 4)
 seg('/GP20', B, W, SDV, (SDV[0], e[1] - 2.0), (e[0], e[1] - 1.0), e)
-QD, QC = (108.6, 121.8), (107.6, 122.8)          # vias next to the QT socket's SDA and SCL pads
+QD, QC = (QX + 5.3, 121.8), (QX + 4.3, 122.8)          # vias next to the QT socket's SDA and SCL pads
 seg('/GP20', B, W, SDV, (QD[0] + 1.0, SDV[1]), (QD[0], SDV[1] + 1.0), QD)
 via('/GP20', *QD)
 seg('/GP20', F, W, pad('J7', 3), QD, pad('R21', 2))
@@ -373,14 +380,14 @@ e = pad('J5', 3)
 seg('/GP21', B, W, SCV, (e[0] - 1.04, SCV[1]), (e[0], SCV[1] + 1.04), e, (e[0], e[1] + 1.4), (e[0] - 0.6, e[1] + 2.0),
     (QC[0] + 0.6, e[1] + 2.0), (QC[0], e[1] + 1.4), QC)   # under the header row, so it never crosses SDA
 via('/GP21', *QC)
-seg('/GP21', F, W, pad('J7', 4), QC, (108.7, 122.8), (109.2, 123.3), pad('R22', 2))
+seg('/GP21', F, W, pad('J7', 4), QC, (QX + 5.4, 122.8), (QX + 5.9, 123.3), pad('R22', 2))
 # 3.3 V for the QT socket and the pull-ups, from J6 pin 8 along the bottom layer
 r1, r2 = pad('R21', 1), pad('R22', 1); q2 = pad('J7', 2)
 seg('+3V3', F, 0.3, q2, (r1[0], q2[1]), r1, r2)
-seg('+3V3', F, 0.3, (r1[0], q2[1]), (111.5, q2[1]))
-via('+3V3', 111.5, q2[1])
+seg('+3V3', F, 0.3, (r1[0], q2[1]), (QX + 8.2, q2[1]))
+via('+3V3', QX + 8.2, q2[1])
 e = pad('J6', 8)
-seg('+3V3', B, 0.4, (111.5, q2[1]), (111.5, 125.4), (112.3, 126.2), (e[0] - 0.8, 126.2), (e[0], 127.0), e)
+seg('+3V3', B, 0.4, (QX + 8.2, q2[1]), (QX + 8.2, 125.4), (QX + 9.0, 126.2), (e[0] - 0.8, 126.2), (e[0], 127.0), e)
 
 # ---------------------------------------------------------------- silkscreen
 def to_fab(*refs):
@@ -405,12 +412,12 @@ def text(s_, x, y, rot=0, size=0.9):
 to_fab('H1', 'H2', 'H3', 'H4', 'J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'SW1',
        *[r for r in BMAP.values() if r != 'L1'])
 ref_at('D1', 111.6, 68.2)
-ref_at('R21', 110.2, 119.7); ref_at('R22', 113.3, 122.6)
-text('J1 +12V', 105.2, 67.6); text('GND', 103.5, 77.5)
+ref_at('R21', QX + 6.9, 119.7); ref_at('R22', QX + 10.0, 122.6)
+text('J1 +12V', 93.5, 65.1); text('GND', 93.5, 87.9)
 text('PWR', 113.4, 94.0, 90)
 text('RUN', 145.6, 66.0)
 text('OUT1 GP0-7', XO - 4.7, J_Y['J2'] + 6.5, 90); text('OUT2 GP8-15', XO - 4.7, J_Y['J3'] + 6.5, 90)
-text('J7 QT I2C', 104.6, 116.4)
+text('J7 QT I2C', QX + 1.3, 116.4)
 for j, name, labels in (('J4', 'J4 UART', ['GND', 'TX', 'RX']),
                         ('J6', 'J6 SPARE', ['GND', '18', '19', '22', '26', '27', '28', '3V3']),
                         ('J5', 'J5 I2C', ['GND', '3V3', 'SCL', 'SDA'])):
@@ -421,11 +428,11 @@ for j, name, labels in (('J4', 'J4 UART', ['GND', 'TX', 'RX']),
         else:
             text(l, x, HY - 3.4, 90)
     text(name, sum(xs) / len(xs), HY + 3.0)
-text('led-budget-board', 108.2, 98.7, size=0.8)
-text('v1.0, Pico 2 W', 108.2, 100.2, size=0.8)
-# the logo: the processor board's footprint scaled to 14 mm tall (logos.pretty)
+text('led-budget-board', 107.8, 104.0)
+text('v1.0, Pico 2 W', 107.8, 105.8)
+# the logo: the processor board's footprint (logos.pretty), in the open space below the 12 V terminal
 g = pcbnew.FootprintLoad(os.path.join(os.path.dirname(os.path.abspath(OUT)), 'logos.pretty'), 'SJG_BigBrother')
-g.SetFPID(pcbnew.LIB_ID('logos', 'SJG_BigBrother')); g.SetReference('G1'); g.SetPosition(V(108.2, 108.3))
+g.SetFPID(pcbnew.LIB_ID('logos', 'SJG_BigBrother')); g.SetReference('G1'); g.SetPosition(V(91.2, 104.0))
 b.Add(g)
 
 # No bottom-layer pour among the shroud pins: the data lanes there would cut it into slivers that
