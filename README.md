@@ -15,7 +15,7 @@ through two of the standard 16-pin output shrouds. Little sibling of
 | RTC | DS3231 and coin cell | None: time comes from the show leader's PicoComm beacons |
 | USB, BOOTSEL, LED, SWD | On the board | The Pico's own |
 | Debug UART | UART1 on GPIO36/37 | UART0 on GP16 (TX) / GP17 (RX), header J4 |
-| I2C | (v1.1) I2C0 on GPIO32/33 | I2C0 on GP20 (SDA) / GP21 (SCL), header J5, 10k pull-ups |
+| I2C | (v1.1) I2C0 on GPIO32/33 | I2C0 on GP20 (SDA) / GP21 (SCL), 10k pull-ups: pin header J5 and STEMMA QT / Qwiic socket J7 |
 | Spare I/O | GPIO35-42 | GP18, GP19, GP22, GP26-28 on header J6 |
 | 3.3 V | NCP1117 on the board | The Pico's 3V3 pin |
 

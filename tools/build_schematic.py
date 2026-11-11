@@ -3,7 +3,8 @@
 A carrier for a Raspberry Pi Pico 2 W: two 16-pin ribbon shrouds (16 strands, GP0-15),
 the 12 V -> 5 V buck from led-processor-board, a debug UART header on GP16/17, an I2C
 header on GP20/21, a spare GPIO header and a RUN button. No RTC, no USB, no radio: those
-come with the Pico (time comes from the show leader's PicoComm beacons).
+come with the Pico (time comes from the show leader's PicoComm beacons). The I2C bus also
+goes to a STEMMA QT socket.
 
     KICAD_SYMBOL_DIR=/usr/share/kicad/symbols python3 tools/build_schematic.py [outdir]
 
@@ -134,7 +135,8 @@ for lib, name in [('Device', 'R'), ('Device', 'C'), ('Device', 'D_Schottky'), ('
                   ('Connector_Generic', 'Conn_02x08_Odd_Even'), ('Connector_Generic', 'Conn_01x03'),
                   ('Connector_Generic', 'Conn_01x04'), ('Connector_Generic', 'Conn_01x08'),
                   ('Connector', 'Screw_Terminal_01x02'), ('Regulator_Switching', 'TPS54202DDC'),
-                  ('Switch', 'SW_Push'), ('Mechanical', 'MountingHole')]:
+                  ('Switch', 'SW_Push'), ('Mechanical', 'MountingHole'),
+                  ('Connector_Generic_MountingPin', 'Conn_01x04_MountingPin')]:
     SYM[lib + ':' + name] = libs.get_symbol(lib, name)
 
 
@@ -420,28 +422,44 @@ def header(n, ref, value, x, desc, nets):
     return J
 
 
-header(3, 'J4', 'UART', 208.28, 'Debug UART0: GND, TX (GP16), RX (GP17)', ['GND', 'GP16', 'GP17'])
-sh.text('1 GND\n2 TX (GP16)\n3 RX (GP17)', (213.36, hy + 13.97))
-header(4, 'J5', 'I2C', 254.0, 'I2C0: GND, 3V3, SCL (GP21), SDA (GP20)', ['GND', '+3V3', 'GP21', 'GP20'])
-sh.text('1 GND\n2 3V3\n3 SCL (GP21)\n4 SDA (GP20)', (259.08, hy + 16.51))
+header(3, 'J4', 'UART', 200.66, 'Debug UART0: GND, TX (GP16), RX (GP17)', ['GND', 'GP16', 'GP17'])
+sh.text('1 GND\n2 TX (GP16)\n3 RX (GP17)', (205.74, hy + 13.97))
+header(4, 'J5', 'I2C', 241.3, 'I2C0: GND, 3V3, SCL (GP21), SDA (GP20)', ['GND', '+3V3', 'GP21', 'GP20'])
+sh.text('1 GND\n2 3V3\n3 SCL (GP21)\n4 SDA (GP20)', (246.38, hy + 16.51))
 for i, net in enumerate(['GP20', 'GP21']):
-    x = 281.94 + 7.62 * i
+    x = 269.24 + 7.62 * i
     rr = R(sh, '10k', (x, hy + 12.7), ref_at=(x + 1.905, hy + 11.43), val_at=(x + 1.905, hy + 13.97))
     pwr(sh, '+3V3', rr[1])
     sh.wire(rr[2], (x, hy + 21.59)); sh.label(net, (x, hy + 21.59), 270)
-header(8, 'J6', 'SPARE', 325.12, 'Spare GPIO: 3V3, GP18, GP19, GP22, GP26-28 (ADC0-2), GND',
+# STEMMA QT / Qwiic socket on the same I2C bus (its own pin order: GND, 3V3, SDA, SCL)
+QT = 'Connector_Generic_MountingPin:Conn_01x04_MountingPin'
+J7 = sh.symbol(QT, SYM[QT], 'J7', 'STEMMA QT', (304.8, hy + 15.24),
+               fields=part('SM04B-SRSS-TB(LF)(SN)', 'C160404', 'JST',
+                           'STEMMA QT / Qwiic I2C socket: JST SH 4-pin 1.0 mm, side entry, SMD',
+                           'Connector_JST:JST_SH_SM04B-SRSS-TB_1x04-1MP_P1.00mm_Horizontal'),
+               ref_at=(295.91, hy + 5.08), val_at=(300.99, hy + 5.08))
+p = J7[1]; sh.wire(p, (p[0] - 5.08, p[1])); gnd(sh, (p[0] - 5.08, p[1]), rot=270)
+p = J7[2]; top = J7[1][1] - 2.54
+sh.wire(p, (p[0] - 12.7, p[1]), (p[0] - 12.7, top)); pwr(sh, '+3V3', (p[0] - 12.7, top))
+for n, net in [(3, 'GP20'), (4, 'GP21')]:
+    p = J7[n]; sh.wire(p, (p[0] - 7.62, p[1])); sh.label(net, (p[0] - 7.62, p[1]), 180)
+gnd(sh, J7['MP'])
+sh.text('1 GND\n2 3V3\n3 SDA (GP20)\n4 SCL (GP21)', (309.88, hy + 16.51))
+header(8, 'J6', 'SPARE', 345.44, 'Spare GPIO: 3V3, GP18, GP19, GP22, GP26-28 (ADC0-2), GND',
        ['+3V3', 'GP18', 'GP19', 'GP22', 'GP26', 'GP27', 'GP28', 'GND'])
-sh.text('1 3V3\n2 GP18\n3 GP19\n4 GP22\n5 GP26 / ADC0\n6 GP27 / ADC1\n7 GP28 / ADC2\n8 GND', (330.2, hy + 26.67))
+sh.text('1 3V3\n2 GP18\n3 GP19\n4 GP22\n5 GP26 / ADC0\n6 GP27 / ADC1\n7 GP28 / ADC2\n8 GND', (350.52, hy + 26.67))
 sh.text('J4: debug UART, moved off GP0/1 so the outputs get GP0-15.\n'
-        'J5: I2C0 with 10k pull-ups, for a small display or a sensor.', (185.42, hy + 43.18))
+        'J5 and J7: I2C0 with 10k pull-ups, for a small display or a sensor. J5 is a pin header in the\n'
+        'order of the common 4-pin OLED modules; J7 is a STEMMA QT / Qwiic socket for ready-made cables.\n'
+        'Mind the order: SCL and SDA swap places between the two.', (185.42, hy + 43.18))
 
 # mounting holes
 for i in range(4):
-    x = 360.68 + 12.7 * i
+    x = 378.46 + 7.62 * i
     sh.symbol('Mechanical:MountingHole', SYM['Mechanical:MountingHole'], 'H%d' % (i + 1), 'M3', (x, hy + 12.7),
               fields={'Footprint': 'MountingHole:MountingHole_3.2mm_M3'}, in_bom=False,
-              ref_at=(x - 2.54, hy + 7.62), val_at=(x - 2.54, hy + 17.78))
-sh.text('Mounting holes', (358.14, hy + 2.54))
+              ref_at=(x - 1.27, hy + 8.89), val_at=(x - 1.27, hy + 17.78))
+sh.text('Mounting holes', (375.92, hy + 5.08))
 
 # ======================================================================================
 # write files
