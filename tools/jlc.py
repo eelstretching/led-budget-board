@@ -21,7 +21,7 @@ import pcbnew
 NAME = 'led-budget-board'
 BOARD = NAME + '.kicad_pcb'
 OUT = 'production'
-SOCKET = ('2.54-1*20P female header', 'C50984', 'BOOMELE 2.54-1*20P')   # two of these carry the Pico
+SOCKET = ('2.54-1*20P female header', 'C2905423', 'Kinghelm KH-2.54FH-1X20P-H8.5')   # two of these carry the Pico
 NOT_FITTED = {'A1': 'Raspberry Pi Pico 2 W (SC1633): yours, plugs into sockets A1A and A1B',
               'H1': 'M3 mounting hole', 'H2': 'M3 mounting hole', 'H3': 'M3 mounting hole', 'H4': 'M3 mounting hole'}
 ROT_FIX = {}     # add ref: degrees here if JLC's placement preview shows a part turned
