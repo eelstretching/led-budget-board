@@ -361,7 +361,7 @@ sh.text('Output shrouds: 16-pin IDC to the output boards. Pin 1 is the triangle 
         'Odd pins 1-11 GND, 13 = +3V3 (shifter VCCA), 15 = +5V (shifter VCCB); data 1-8 on even pins 2-16\n'
         '(same as led-output-board J2 and led-processor-board). 33R series resistors at the Pico end.',
         (185.42, 139.7))
-BOX = part('Box header 2x08 2.54 mm', '', '', 'Shrouded 16-pin IDC box header, same as the output boards',
+BOX = part('2.54-2*8P', 'C3406', 'BOOMELE', 'Shrouded 16-pin IDC box header, straight, same kind as the output boards',
            'Connector_IDC:IDC-Header_2x08_P2.54mm_Vertical')
 for k in range(2):
     bx = [185.42, 297.18][k]
@@ -407,7 +407,8 @@ sh.text('Headers', (185.42, hy - 2.54), size=2.54)
 def header(n, ref, value, x, desc, nets):
     full = 'Connector_Generic:Conn_01x%02d' % n
     J = sh.symbol(full, SYM[full], ref, value, (x, hy + 12.7 + 2.54 * ((n - 1) // 2)),
-                  fields=part('1x%d 2.54 mm pin header' % n, '', '', desc,
+                  fields=part(*{3: ('2.54-1*3P', 'C49257', 'BOOMELE'), 4: ('B-2100S04P-A110', 'C124378', 'Ckmtw'),
+                                8: ('B-2100S08P-A110', 'C124381', 'Ckmtw')}[n], desc,
                               'Connector_PinHeader_2.54mm:PinHeader_1x%02d_P2.54mm_Vertical' % n),
                   ref_at=(x - 1.27, hy + 5.08), val_at=(x + 3.81, hy + 5.08))
     for i, net in enumerate(nets):

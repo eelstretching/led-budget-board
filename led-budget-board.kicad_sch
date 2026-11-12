@@ -9892,7 +9892,7 @@
 				)
 			)
 		)
-		(property "Description" "Shrouded 16-pin IDC box header, same as the output boards"
+		(property "Description" "Shrouded 16-pin IDC box header, straight, same kind as the output boards"
 			(at 215.9 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -9903,7 +9903,7 @@
 				)
 			)
 		)
-		(property "manufacturer" ""
+		(property "manufacturer" "BOOMELE"
 			(at 215.9 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -9914,7 +9914,18 @@
 				)
 			)
 		)
-		(property "manufacturer_pn" "Box header 2x08 2.54 mm"
+		(property "manufacturer_pn" "2.54-2*8P"
+			(at 215.9 172.72 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C3406"
 			(at 215.9 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -12081,7 +12092,7 @@
 				)
 			)
 		)
-		(property "Description" "Shrouded 16-pin IDC box header, same as the output boards"
+		(property "Description" "Shrouded 16-pin IDC box header, straight, same kind as the output boards"
 			(at 327.66 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -12092,7 +12103,7 @@
 				)
 			)
 		)
-		(property "manufacturer" ""
+		(property "manufacturer" "BOOMELE"
 			(at 327.66 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -12103,7 +12114,18 @@
 				)
 			)
 		)
-		(property "manufacturer_pn" "Box header 2x08 2.54 mm"
+		(property "manufacturer_pn" "2.54-2*8P"
+			(at 327.66 172.72 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C3406"
 			(at 327.66 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -14281,7 +14303,7 @@
 				)
 			)
 		)
-		(property "manufacturer" ""
+		(property "manufacturer" "BOOMELE"
 			(at 200.66 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -14292,7 +14314,18 @@
 				)
 			)
 		)
-		(property "manufacturer_pn" "1x3 2.54 mm pin header"
+		(property "manufacturer_pn" "2.54-1*3P"
+			(at 200.66 231.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C49257"
 			(at 200.66 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -14526,7 +14559,7 @@
 				)
 			)
 		)
-		(property "manufacturer" ""
+		(property "manufacturer" "Ckmtw"
 			(at 241.3 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -14537,7 +14570,18 @@
 				)
 			)
 		)
-		(property "manufacturer_pn" "1x4 2.54 mm pin header"
+		(property "manufacturer_pn" "B-2100S04P-A110"
+			(at 241.3 231.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C124378"
 			(at 241.3 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -15729,7 +15773,7 @@
 				)
 			)
 		)
-		(property "manufacturer" ""
+		(property "manufacturer" "Ckmtw"
 			(at 350.52 236.22 0)
 			(hide yes)
 			(show_name no)
@@ -15740,7 +15784,18 @@
 				)
 			)
 		)
-		(property "manufacturer_pn" "1x8 2.54 mm pin header"
+		(property "manufacturer_pn" "B-2100S08P-A110"
+			(at 350.52 236.22 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C124381"
 			(at 350.52 236.22 0)
 			(hide yes)
 			(show_name no)

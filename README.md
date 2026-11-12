@@ -55,7 +55,19 @@ The same on both boards:
   bottom edge. J6 (spare) is GND, GP18, GP19, GP22, GP26, GP27, GP28, 3V3, left to right.
 - J5 (I2C header, bottom right) and J7 (STEMMA QT, left edge) share the bus and the 10k pull-ups.
 
+## Ordering from JLCPCB
+
+`production/` holds the upload set for full assembly (SMD and through-hole), made by `tools/jlc.py`:
+
+- `led-budget-board-gerbers.zip`: gerbers and drill files.
+- `jlcpcb-bom.csv` and `jlcpcb-cpl.csv`: the parts list and placement file, 24 lines, 49 parts
+  (41 SMD, 8 through-hole).
+- `bom-full.csv`: the same list for people, plus what JLC does not fit.
+
+The Pico 2 W is not on the list. JLC fits two 1x20 sockets in its place (A1A and A1B in the files) and
+the Pico plugs in afterwards. Check in JLC's placement preview that every part sits the right way round,
+the through-hole ones especially; `ROT_FIX` in `tools/jlc.py` is where a correction goes.
+
 ## Still to do
 
-- JLCPCB production files, with LCSC parts for the through-hole parts (shrouds, 1x20 sockets, pin headers).
 - A `led_budget_board.h` board header for the firmware (default UART on GP16/17).
