@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "led-budget-board")(type "KiCad")(uri "${KIPRJMOD}/led-budget-board.kicad_sym")(options "")(descr "Pico 2 W carrier symbol"))
+)
