@@ -24,7 +24,10 @@ OUT = 'production'
 SOCKET = ('2.54-1*20P female header', 'C2905423', 'Kinghelm KH-2.54FH-1X20P-H8.5')   # two of these carry the Pico
 NOT_FITTED = {'A1': 'Raspberry Pi Pico 2 W (SC1633): yours, plugs into sockets A1A and A1B',
               'H1': 'M3 mounting hole', 'H2': 'M3 mounting hole', 'H3': 'M3 mounting hole', 'H4': 'M3 mounting hole'}
-ROT_FIX = {}     # add ref: degrees here if JLC's placement preview shows a part turned
+# JLC's models for the shrouds, sockets and pin headers lie a quarter turn anticlockwise of KiCad's
+# footprints (seen in JLC's placement preview, 2026-11-12): this is added to KiCad's angle.
+# Add ref: degrees here if the preview shows another part turned.
+ROT_FIX = {'J2': -90, 'J3': -90, 'J4': -90, 'J5': -90, 'J6': -90, 'A1A': -90, 'A1B': -90}
 LAYERS = 'F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts'
 MM = pcbnew.ToMM
 
