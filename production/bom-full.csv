@@ -1,5 +1,5 @@
 Comment,Designator,Footprint,LCSC,Manufacturer PN,Qty,Note
-2.54-1*20P female header,"A1A,A1B",PinSocket_1x20_P2.54mm_Vertical,C50984,BOOMELE 2.54-1*20P,2,Through-hole
+2.54-1*20P female header,"A1A,A1B",PinSocket_1x20_P2.54mm_Vertical,C2905423,Kinghelm KH-2.54FH-1X20P-H8.5,2,Through-hole
 10u,"C1,C2",C_0805_2012Metric,C440198,CL21A106KBYNNNE,2,
 100n,"C3,C4",C_0603_1608Metric,C14663,CC0603KRX7R9BB104,2,
 75p,C5,C_0402_1005Metric,C37809,0402CG750J500NT,1,
