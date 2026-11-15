@@ -68,6 +68,22 @@ The Pico 2 W is not on the list. JLC fits two 1x20 sockets in its place (A1A and
 the Pico plugs in afterwards. Check in JLC's placement preview that every part sits the right way round,
 the through-hole ones especially; `ROT_FIX` in `tools/jlc.py` is where a correction goes.
 
+## Firmware
+
+`firmware/boards/led_budget_board.h` is the pico-sdk board header. It is `pico2_w.h` with the default
+UART moved to UART0 on GP16 (TX) / GP17 (RX) and the default I2C to I2C0 on GP20 (SDA) / GP21 (SCL),
+and it defines `LED_BUDGET_BOARD` for code that needs to tell the boards apart, plus the output pin
+numbers (`LED_BUDGET_BOARD_OUT1_FIRST_PIN` = 0, `..._OUT2_FIRST_PIN` = 8). Use it with:
+
+    set(PICO_BOARD led_budget_board)
+    set(PICO_BOARD_HEADER_DIRS <path to led-budget-board>/firmware/boards)
+
+both before `pico_sdk_init()` / `project()`; or `-DPICO_BOARD=led_budget_board
+-DPICO_BOARD_HEADER_DIRS=<absolute path>`. Firmware should still turn on USB stdio itself
+(`pico_enable_stdio_usb`), since that is a per-target setting. The header's macros were checked with the C
+preprocessor against pico-sdk 2.3.0's `pico2_w.h`; it has not been built into a firmware image yet.
+
 ## Still to do
 
-- A `led_budget_board.h` board header for the firmware (default UART on GP16/17).
+- Build a PicoLEDs example for `led_budget_board` once the boards arrive (about 10-12 days), and check
+  both outputs on the bench.
