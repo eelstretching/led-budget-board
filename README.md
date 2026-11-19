@@ -80,10 +80,20 @@ numbers (`LED_BUDGET_BOARD_OUT1_FIRST_PIN` = 0, `..._OUT2_FIRST_PIN` = 8). Use i
 
 both before `pico_sdk_init()` / `project()`; or `-DPICO_BOARD=led_budget_board
 -DPICO_BOARD_HEADER_DIRS=<absolute path>`. Firmware should still turn on USB stdio itself
-(`pico_enable_stdio_usb`), since that is a per-target setting. The header's macros were checked with the C
-preprocessor against pico-sdk 2.3.0's `pico2_w.h`; it has not been built into a firmware image yet.
+(`pico_enable_stdio_usb`), since that is a per-target setting. The bring-up firmware builds with it against
+pico-sdk 2.3.0; nothing has run on a board yet.
+
+## Bring-up
+
+`docs/bringup.md` is the checklist for a new board: continuity, the buck before the Pico goes in, then the
+outputs, UART and I2C. `firmware/examples/bringup` is the test firmware it uses (USB stdio on). Build it
+with:
+
+    cmake -S firmware -B build -G Ninja -DPICO_SDK_PATH=<pico-sdk 2.3.x>
+    ninja -C build                      # -> build/examples/bringup/bringup.uf2
+
+and flash with `picotool load -f -x bringup.uf2`.
 
 ## Still to do
 
-- Build a PicoLEDs example for `led_budget_board` once the boards arrive (about 10-12 days), and check
-  both outputs on the bench.
+- Bench-test the boards when they arrive (JLC shipped them 2026-11-16) and fix whatever the checklist turns up.

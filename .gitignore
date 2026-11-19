@@ -3,3 +3,5 @@
 fp-info-cache
 *.lck
 __pycache__/
+build/
+*.uf2
