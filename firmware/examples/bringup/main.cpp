@@ -97,7 +97,7 @@ static void handleKey(int c) {
 }
 
 static float dieTemperatureC() {
-    adc_select_input(8);                       // the RP2350's temperature sensor
+    adc_select_input(ADC_TEMPERATURE_CHANNEL_NUM);   // input 4 on the 60-pin RP2350A of a Pico 2 W (8 on the RP2350B)
     uint16_t raw = adc_read();
     float v = raw * 3.3f / 4096.0f;
     return 27.0f - (v - 0.706f) / 0.001721f;

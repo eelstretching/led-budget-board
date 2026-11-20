@@ -44,7 +44,7 @@ tio /dev/cu.usbmodem*        # Linux: tio /dev/ttyACM0
 Leave USB as the only power for these checks:
 
 - [ ] The Pico's own LED blinks once a second: the radio answers. The report says `Radio: answers`.
-- [ ] A status line per second: uptime, die temperature (room temperature, give or take 10 C), `USB power yes`.
+- [ ] A status line per second: uptime, die temperature (about 25 to 40 C), `USB power yes`.
 - [ ] Shroud pin 13 now reads 3.3 V. Shroud pin 15 reads 0 V: with USB alone the 5 V rail stays off.
 - [ ] `SDA=1 SCL=1`: both I2C pull-ups (R21, R22) hold the bus up. A 0 means that pull-up or the line is broken.
 
